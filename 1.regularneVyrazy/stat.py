@@ -2,6 +2,7 @@
 
 import re
 import sys
+import pprint
 
 def addMatchToDict(key, matches, dict_ref):
   match = matches[0]
@@ -34,6 +35,28 @@ def countComposers(compositions):
         composers[composer] = 1
   return composers
 
+def getCenturyFromCompositionYear(year):
+  matchYear = re.match(r'.*(\d{4}).*', year)
+  matchCentury = re.match(r'.*(\d{2})th.*', year)
+  if matchYear:
+    return ((int(matchYear.group(1))) - 1) // 100 + 1
+  elif matchCentury:
+    return (int(matchCentury.group(1)))
+  else:
+    return False
+
+def countCompositionPerCentury(compositions):
+  centuries = {}
+  for composition in compositions:
+    for year in composition.get('composition_years', []):
+      century = getCenturyFromCompositionYear(year)
+      if century:
+        if century in centuries:
+          centuries[century] += 1
+        else:
+          centuries[century] = 1
+  return centuries
+
 translationDict = {
   'printNumber': {
     'default': None,
@@ -45,7 +68,7 @@ translationDict = {
     'regex': re.compile('Composer:\s*(.*)'),
     'translation': (lambda *args: removeParenthesisFromMatch(';', *args)),
   },
-  'composition_year': {
+  'composition_years': {
     'default': [],
     'regex': re.compile('Composition Year:\s*(.*)'),
     'translation': (lambda *args: addSeparatedMatches(',', *args)),
@@ -54,13 +77,16 @@ translationDict = {
 
 def main(*args, **kwargs):
   numberOfArguments = 3;
+  outputTypes = ['composer', 'century']
 
   if len(sys.argv) != numberOfArguments:
     sys.exit('Wrong number of arguments')
 
   _, textFile, outputType = sys.argv
+  if outputType not in outputTypes:
+    sys.exit(str.format('Wrong second argument accepted are: {0}', ', '.join(outputTypes)))
 
-  with open(outputType) as file:
+  with open(textFile) as file:
     fileContent = file.readlines()
 
   translatedList = []
@@ -76,11 +102,14 @@ def main(*args, **kwargs):
         value['translation'](key, list(match.groups()), translatedDict)
   translatedList.append(translatedDict) # add last record
 
-
-  import pprint
-  pprint.pprint(translatedList)
-  pprint.pprint(countComposers(translatedList))
-  # print('###########')
+  if outputType == 'composer':
+    countedComposers = countComposers(translatedList)
+    for composer, count in countedComposers.items():
+      print('{0}: {1}'.format(composer, count))
+  elif outputType == 'century':
+    countedCenturies = countCompositionPerCentury(translatedList)
+    for century, count in countedCenturies.items():
+      print('{0}th century: {1}'.format(century, count))
 
 if __name__ == "__main__":
   main()
