@@ -72,7 +72,7 @@ TRANSLATION_DICT = {
   },
   'composers': {
     'regex': re.compile('Composer:\s*(.*)'),
-    'translation': addMultipleMatches,
+    'translation': (lambda *args: addSeparatedMatches(';', *args)),
     'output': 'Composer: {0}'
   },
   'composition_years': {
@@ -190,6 +190,7 @@ class Composition:
     self.year = self.parseCompositionYear(translatedDict.get('composition_years', ''))
     self.voices = [Voice(voice) for voice in translatedDict.get('voices', [])]
     self.authors = self.parseComposers(translatedDict.get('composers', []))
+    print('self.authors', self.authors)
 
   def __repr__(self):
     return 'Composition: name: {}, incipit: {}, key: {}, genre: {}, year: {}'.format(
@@ -204,8 +205,32 @@ class Composition:
       return None
   
   def parseComposers(self, composers):
-    print('composers', composers)
-  
+    personComposers = []
+    for composer in composers:
+      print('composer', composer)
+      composerMatch= re.match(r'([^\(]+)(\(.*\))?', composer)
+      if composerMatch:
+        name = composerMatch.group(1)
+        date = re.match(r'\(\*?([\d\/]+)?-{0,2}\+?(.*?)?\)', composerMatch.group(2))
+        born = None
+        died = None
+        if date:
+          bornDate = date.group(1)
+          if bornDate:
+            bornDateMatch = re.match(r'(^\d{4}$)', bornDate)
+            if bornDateMatch:
+              born = bornDateMatch.group(1)
+          diedDate = date.group(2)
+          if diedDate:
+            diedDateMatch = re.match(r'(^\d{4}$)', diedDate)
+            if diedDateMatch:
+              died = diedDateMatch.group(1)
+          personComposers.append(Person(name, born, died))
+        else:
+          personComposers.append(Person(nam + composerMatch.group(2)))
+    print('personComposers', personComposers)
+    return personComposers
+
 class Voice:
   def __init__(self, voice):
     voice_match = re.match(r'(.+--[^\s|,]+)?,?\s?(.*)', voice)
