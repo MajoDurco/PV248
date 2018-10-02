@@ -141,7 +141,7 @@ class Print:
     for key, value in TRANSLATION_DICT.items():
       value.get('output')(self.translatedDict.get(key, ''))
   
-  def composition():
+  def composition(self):
     return self.edition.composition
 
 class Edition:
