@@ -34,8 +34,9 @@ def listValueOutput(string, values, separator=''):
     else:
       print(values[i], end=separator)
 
-def outputVoice():
-  pass
+def outputVoice(string, values, separator=''):
+  for i in range(len(values)):
+    print('{} {}: {}'.format(string, i+1, values[i]))
 
 TRANSLATION_DICT = {
   'printNumber': {
@@ -81,7 +82,7 @@ TRANSLATION_DICT = {
   'voices': {
     'regex': re.compile('Voice \d+:\s*(.*)'),
     'translation': (lambda key, *args: extendMatches('voices', *args)),
-    'output': (lambda values: listValueOutput('Voice: ', values, ', ')),
+    'output': (lambda values: outputVoice('Voice', values, ', ')),
   },
   'partiture': {
     'regex': re.compile('Partiture:\s*(.*)'),
@@ -117,32 +118,31 @@ def load(filename):
   sortedTranslatedList = sorted(translatedList, key=lambda printInstance: printInstance.print_id)
   return sortedTranslatedList
 
-def getPartiture(partiture):
-  if partiture.strip() == 'yes':
-    return True
-  else:
-    return False
 
 class Print:
   def __init__(self, translatedDict):
     self.translatedDict = translatedDict
-    self.partiture = getPartiture(translatedDict.get('partiture', ''))
+    self.partiture = self.getPartiture(translatedDict.get('partiture', ''))
     self.print_id = int(translatedDict.get('printNumber'));
-    self.edition = Edition(
-      translatedDict
-    );
+    self.edition = Edition(translatedDict);
   
   def __repr__(self):
     return 'Print:\n partiture: {}\n printId: {}\n edition: {}\n'.format(
       self.partiture, self.print_id, self.edition
     )
 
+  def getPartiture(self, partiture):
+    if partiture.strip() == 'yes':
+      return True
+    else:
+      return False
+
   def format(self):
     for key, value in TRANSLATION_DICT.items():
       value.get('output')(self.translatedDict.get(key, ''))
   
   def composition():
-    return self.edition.composition()
+    return self.edition.composition
 
 class Edition:
   def __init__(self, translatedDict):
