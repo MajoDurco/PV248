@@ -27,12 +27,15 @@ def stringValueOutput(string, value):
   print(string.format(value))
 
 def listValueOutput(string, values, separator=''):
-  print(string, end='')
-  for i in range(len(values)):
-    if i == len(values)-1: #last element
-      print(values[i])
-    else:
-      print(values[i], end=separator)
+  if values:
+    print(string, end='')
+    for i in range(len(values)):
+      if i == len(values)-1: #last element
+        print(values[i])
+      else:
+        print(values[i], end=separator)
+  else:
+    print(string)
 
 def outputVoice(string, values, separator=''):
   for i in range(len(values)):
@@ -105,7 +108,7 @@ def load(filename):
   for line in fileContent:
     stripped_line = line.strip()
     if not stripped_line:
-      if translatedDict: 
+      if translatedDict:
         # for empty string translatedDict can be {}, 
         # dont want to process that
         translatedList.append(Print(translatedDict))
@@ -114,10 +117,10 @@ def load(filename):
       match = value['regex'].match(stripped_line)
       if match:
         value['translation'](key, list(match.groups()), translatedDict)
-  translatedList.append(Print(translatedDict)) # add last record
+  if translatedDict:
+    translatedList.append(Print(translatedDict)) # add last record
   sortedTranslatedList = sorted(translatedList, key=lambda printInstance: printInstance.print_id)
   return sortedTranslatedList
-
 
 class Print:
   def __init__(self, translatedDict):
