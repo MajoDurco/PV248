@@ -8,12 +8,11 @@ def addMatchToDict(key, matches, dict_ref):
     dict_ref[key] = match
 
 def extendMatches(key, matches, dict_ref):
-  match = matches[0]
-  if match:
+  if matches:
     if key in dict_ref:
-      dict_ref[key].append(match)
+      dict_ref[key].append(matches)
     else:
-      dict_ref[key] = [match]
+      dict_ref[key] = [matches]
 
 def addMultipleMatches(key, matches, dict_ref):
   dict_ref[key] = [ match for match in matches if match ];
@@ -39,7 +38,7 @@ def listValueOutput(string, values, separator=''):
 
 def outputVoice(string, values, separator=''):
   for i in range(len(values)):
-    print('{} {}: {}'.format(string, i+1, values[i]))
+    print('{} {}: {}'.format(string, values[i][0], values[i][1]))
 
 TRANSLATION_DICT = {
   'printNumber': {
@@ -83,7 +82,7 @@ TRANSLATION_DICT = {
     'output': (lambda value: stringValueOutput('Editor: {}', value)),
   },
   'voices': {
-    'regex': re.compile('Voice \d+:\s*(.*)'),
+    'regex': re.compile('Voice (\d+):\s*(.*)'),
     'translation': (lambda key, *args: extendMatches('voices', *args)),
     'output': (lambda values: outputVoice('Voice', values, ', ')),
   },
@@ -228,7 +227,8 @@ class Composition:
 
 class Voice:
   def __init__(self, voice):
-    voice_match = re.match(r'(.+--[^\s|,]+)?,?\s?(.*)', voice)
+    self.voiceNumber = voice[0];
+    voice_match = re.match(r'(.+--[^\s|,]+)?,?\s?(.*)', voice[1])
     if voice_match:
       self.range = voice_match.group(1)
       self.name = voice_match.group(2)
@@ -237,7 +237,7 @@ class Voice:
       self.range = None
   
   def __repr__(self):
-    return 'Voice: name: {}, range: {}'.format(self.name, self.range)
+    return 'Voice {}: name: {}, range: {}'.format(self.voiceNumber, self.name, self.range)
 
 class Person:
   def __init__(self, name='', born=None, died=None):
