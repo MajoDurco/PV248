@@ -23,18 +23,18 @@ def addSeparatedMatches(separator, key, matches, dict_ref):
     addMultipleMatches(key, splited_matches, dict_ref)
 
 def stringValueOutput(string, value):
-  print(string.format(value))
+  print(string.format(value.strip()))
 
 def listValueOutput(string, values, separator=''):
   if values:
     print(string, end='')
     for i in range(len(values)):
       if i == len(values)-1: #last element
-        print(values[i])
+        print(values[i].strip())
       else:
-        print(values[i], end=separator)
+        print(values[i].strip(), end=separator)
   else:
-    print(string)
+    print(string.strip())
 
 def outputVoice(string, values, separator=''):
   for i in range(len(values)):
