@@ -2,8 +2,8 @@
 
 import re
 
-def noneToNull(value):
-  return value if value is not None else 'NULL'
+def falsyToNull(value):
+  return value if value else 'NULL'
 
 def addMatchToDict(key, matches, dict_ref):
   match = matches[0]
@@ -136,6 +136,10 @@ class Print:
       self.partiture, self.print_id, self.edition
     )
 
+  def getToupleData(self, editionId):
+    partiture = 'Y' if self.partiture else 'N'
+    return (self.print_id, partiture, editionId)
+
   def getPartiture(self, partiture):
     if partiture.strip() == 'yes':
       return True
@@ -161,6 +165,9 @@ class Edition:
     return 'Edition:\n composition: {}\n Editors: {}\n name: {}\n'.format(
       self.composition, self.authors, self.name
     )
+  
+  def getToupleData(self, scoreId):
+    return (scoreId, falsyToNull(self.name), 'NULL')
 
   def parseEditors(self, editors):
     if not ',' in editors:
@@ -182,6 +189,15 @@ class Composition:
   def __repr__(self):
     return 'Composition:\n name: {}\n incipit: {}\n key: {}\n genre: {}\n year: {}\n voices: {}\n authors: {}\n'.format(
       self.name, self.incipit, self.key, self.genre, self.year, self.voices, self.authors
+    )
+
+  def getToupleData(self):
+    return (
+      falsyToNull(self.name),
+      falsyToNull(self.genre),
+      falsyToNull(self.key),
+      falsyToNull(self.incipit),
+      falsyToNull(self.year)
     )
   
   def parseIncipit(self, incipit):
@@ -241,6 +257,9 @@ class Voice:
   
   def __repr__(self):
     return 'Voice {}: name: {}, range: {}'.format(self.voiceNumber, self.name, self.range)
+  
+  def getToupleData(self, scoreId):
+    return (self.voiceNumber, scoreId, falsyToNull(self.range), falsyToNull(self.name))
 
 class Person:
   def __init__(self, name='', born=None, died=None):
@@ -252,4 +271,4 @@ class Person:
     return 'Person {}, {} -- {}'.format(self.name, self.born, self.died)
 
   def getToupleData(self):
-    return (noneToNull(self.born), noneToNull(self.died), self.name)
+    return (falsyToNull(self.born), falsyToNull(self.died), self.name)
