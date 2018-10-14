@@ -10,28 +10,42 @@ parsedScores = load(dataFile)
 conn = sqlite3.connect(datFile)
 cursor = conn.cursor()
 for score in parsedScores:
+
   savedEditorIds = []
   # EDITORS
   for editor in score.edition.authors:
     toupleData = editor.getToupleData()
-    cursor.execute("SELECT * FROM person WHERE born = ? AND died = ? AND name = ?", toupleData)
-    if cursor.fetchone() is None:
+    cursor.execute("SELECT * FROM person WHERE name = ?", (toupleData[2],))
+    selectedEditor = cursor.fetchone()
+    if selectedPerson is None:
       cursor.execute("INSERT INTO person VALUES (NULL, ?,?,?)", toupleData)
       savedEditorIds.append(cursor.lastrowid)
+    else:
+      if toupleData[0] is not 'NULL':
+        cursor.execute("UPDATE person SET born = ? WHERE id = ?", (toupleData[0], selectedEditor[0]))
+      if toupleData[1] is not 'NULL':
+        cursor.execute("UPDATE person SET died = ? WHERE id = ?", (toupleData[1], selectedEditor[0]))
 
   savedComposerIds = []
   # COMPOSERS
   for composer in score.edition.composition.authors:
     toupleData = composer.getToupleData()
-    cursor.execute("SELECT * FROM person WHERE born = ? AND died = ? AND name = ?", toupleData)
-    if cursor.fetchone() is None:
+    cursor.execute("SELECT * FROM person WHERE name = ?", (toupleData[2],))
+    selectedComposer = cursor.fetchone()
+    if selectedComposer is None:
       cursor.execute("INSERT INTO person VALUES (NULL, ?,?,?)", toupleData)
       savedComposerIds.append(cursor.lastrowid)
+    else:
+      if toupleData[0] is not 'NULL':
+        cursor.execute("UPDATE person SET born = ? WHERE id = ?", (toupleData[0], selectedComposer[0]))
+      if toupleData[1] is not 'NULL':
+        cursor.execute("UPDATE person SET died = ? WHERE id = ?", (toupleData[1], selectedComposer[0]))
 
   # COMPOSITION
   toupleData = score.edition.composition.getToupleData()
   cursor.execute("INSERT INTO score VALUES (NULL, ?,?,?,?,?)", toupleData)
   compositionId = cursor.lastrowid
+  removeComposition = False
 
   # VOICE
   for voice in score.edition.composition.voices:
@@ -55,14 +69,10 @@ for score in parsedScores:
       composition_voices_grouped_by_compositionId[score_id].append(result[1: ])
     else:
       composition_voices_grouped_by_compositionId[score_id] = [result[1: ]]
-  print(composition_voices_grouped_by_compositionId)
   last_voices = composition_voices_grouped_by_compositionId.pop(compositionId)
   if last_voices in composition_voices_grouped_by_compositionId.values():
-    print('delete')
-    cursor.execute("DELETE FROM voice WHERE score == ?", (compositionId,))
-    cursor.execute("DELETE FROM score WHERE id = ?", (compositionId,))
+    removeComposition = True
 
-  print('')
   # EDITION
   toupleData = score.edition.getToupleData(compositionId)
   cursor.execute("INSERT INTO edition VALUES (NULL, ?,?,?)", toupleData)
@@ -79,6 +89,10 @@ for score in parsedScores:
   # PRINT
   toupleData = score.getToupleData(editionId)
   cursor.execute("INSERT INTO print VALUES (?,?,?)", toupleData)
+  
+  if removeComposition:
+    cursor.execute("DELETE FROM voice WHERE score == ?", (compositionId,))
+    cursor.execute("DELETE FROM score WHERE id = ?", (compositionId,))
 
 def logTable(cursor, name):
   print(name.upper())
@@ -92,6 +106,7 @@ print("")
 logTable(cursor, 'person')
 logTable(cursor, 'score')
 logTable(cursor, 'voice')
+logTable(cursor, 'edition')
 logTable(cursor, 'score_author')
 logTable(cursor, 'edition_author')
 logTable(cursor, 'print')
