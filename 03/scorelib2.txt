@@ -1,40 +1,51 @@
 Print Number: 761
-Composer: Duvernoy, Jean Baptiste
+Composer: Kalabis, Viktor
 Title: Allegretto
 Genre: piano etudes
 Key: C
 Composition Year:
 Publication Year:
-Edition:
-Editor:
-Voice 1: flute 
+Edition: a
+Editor: István Máriássy 
+Voice 1: 
 Partiture: yes
 Incipit:
 
 Print Number: 762
-Composer: Duvernoy, Jean Baptiste
+Composer: Kalabis, Viktor (1923--)
 Title: Allegretto
 Genre: piano etudes
 Key: C
 Composition Year:
 Publication Year:
-Edition:
-Editor:
-Voice 1: flute
-Voice 2: piano
+Edition: b
+Editor: Bob Cerulli 
+Voice 1: a
 Partiture: yes
 Incipit:
 
 Print Number: 763
-Composer: Duvernoy, Jean Baptiste
-Title: Allegrett
+Composer: Kalabis, Viktor (1923--)
+Title: Allegretto
 Genre: piano etudes
 Key: C
 Composition Year:
 Publication Year:
-Edition:
-Editor:
-Voice 1: flute
-Voice 2: piano
+Edition: b
+Editor: Bob Cerulli
+Voice 1: a
+Partiture: yes
+Incipit:
+
+Print Number: 764
+Composer: Kalabis, Viktor (1923--)
+Title: Allegretto
+Genre: piano etudes
+Key: C
+Composition Year:
+Publication Year:
+Edition: C
+Editor: Bob Cerulli
+Voice 1: a
 Partiture: yes
 Incipit:

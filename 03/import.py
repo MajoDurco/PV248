@@ -17,7 +17,7 @@ for score in parsedScores:
     toupleData = editor.getToupleData()
     cursor.execute("SELECT * FROM person WHERE name = ?", (toupleData[2],))
     selectedEditor = cursor.fetchone()
-    if selectedPerson is None:
+    if selectedEditor is None:
       cursor.execute("INSERT INTO person VALUES (NULL, ?,?,?)", toupleData)
       savedEditorIds.append(cursor.lastrowid)
     else:
@@ -25,6 +25,7 @@ for score in parsedScores:
         cursor.execute("UPDATE person SET born = ? WHERE id = ?", (toupleData[0], selectedEditor[0]))
       if toupleData[1] is not 'NULL':
         cursor.execute("UPDATE person SET died = ? WHERE id = ?", (toupleData[1], selectedEditor[0]))
+      savedEditorIds.append(selectedEditor[0])
 
   savedComposerIds = []
   # COMPOSERS
@@ -40,6 +41,7 @@ for score in parsedScores:
         cursor.execute("UPDATE person SET born = ? WHERE id = ?", (toupleData[0], selectedComposer[0]))
       if toupleData[1] is not 'NULL':
         cursor.execute("UPDATE person SET died = ? WHERE id = ?", (toupleData[1], selectedComposer[0]))
+      savedComposerIds.append(selectedComposer[0])
 
   # COMPOSITION
   toupleData = score.edition.composition.getToupleData()
@@ -69,22 +71,41 @@ for score in parsedScores:
       composition_voices_grouped_by_compositionId[score_id].append(result[1: ])
     else:
       composition_voices_grouped_by_compositionId[score_id] = [result[1: ]]
+
   last_voices = composition_voices_grouped_by_compositionId.pop(compositionId)
   if last_voices in composition_voices_grouped_by_compositionId.values():
+    matchCompositionId = [k for k, v in composition_voices_grouped_by_compositionId.items() if v == last_voices]
+    compositionId = matchCompositionId[0]
     removeComposition = True
 
   # EDITION
   toupleData = score.edition.getToupleData(compositionId)
-  cursor.execute("INSERT INTO edition VALUES (NULL, ?,?,?)", toupleData)
-  editionId = cursor.lastrowid
+  cursor.execute("SELECT * from edition where score = ? AND name = ?", (toupleData[:2]))
+  found_edition = cursor.fetchone()
+  editorsAreSame = True
+  if found_edition is not None:
+    cursor.execute("SELECT ea.editor from edition_author ea NATURAL JOIN person WHERE edition = ?", (found_edition[0],))
+    foundEditionAuthorsIds = [ editor[0] for editor in cursor.fetchall() ]
+    for newEditorId in foundEditionAuthorsIds:
+      if newEditorId not in foundEditionAuthorsIds:
+        editorsAreSame = False
+  if found_edition is None and editorsAreSame:
+    cursor.execute("INSERT INTO edition VALUES (NULL, ?,?,?)", toupleData)
+    editionId = cursor.lastrowid
+  else:
+    editionId = found_edition[0]
 
   # COMPOSITION - AUTHOR (COMPOSERS)
   for composerId in savedComposerIds:
-    cursor.execute("INSERT INTO score_author VALUES (NULL, ?,?)", (compositionId, composerId))
+    cursor.execute("SELECT * from score_author WHERE score = ? AND composer = ?", (compositionId, composerId))
+    if cursor.fetchone() is None:
+      cursor.execute("INSERT INTO score_author VALUES (NULL, ?,?)", (compositionId, composerId))
 
   # EDITION - AUTHOR (EDITORS)
   for editorId in savedEditorIds:
-    cursor.execute("INSERT INTO edition_author VALUES (NULL, ?,?)", (editionId, editorId))
+    cursor.execute("SELECT * from edition_author WHERE edition = ? AND editor = ?", (editionId, editorId))
+    if cursor.fetchone() is None:
+      cursor.execute("INSERT INTO edition_author VALUES (NULL, ?,?)", (editionId, editorId))
 
   # PRINT
   toupleData = score.getToupleData(editionId)
@@ -98,7 +119,6 @@ def logTable(cursor, name):
   print(name.upper())
   for row in cursor.execute("SELECT * from {}".format(name)): # REMOVE DANGEROUS
     print(row)
-
 
 print("")
 print("DATABASE")
