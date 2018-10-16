@@ -18,8 +18,8 @@ Genre: piano etudes
 Key: C
 Composition Year:
 Publication Year:
-Edition: a
-Editor: István Máriássyx
-Voice 1: oboe 
+Edition: b
+Editor: István Máriássy
+Voice 1: oboe1
 Partiture: yes
 Incipit:

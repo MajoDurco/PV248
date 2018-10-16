@@ -85,11 +85,9 @@ def saveData(parsedScores, cursor):
       foundEditionAuthorsIds = [ editor[0] for editor in cursor.fetchall() ]
       if foundEditionAuthorsIds == savedEditorIds:
         editors_are_same = True
-      editionId = found_edition[0]
       if editors_are_same:
         create_new_edition = False
         editionId = found_edition[0]
-        break
 
     if create_new_edition:
       cursor.execute("INSERT INTO edition VALUES (NULL, ?,?,?)", toupleData)
@@ -115,7 +113,7 @@ def saveData(parsedScores, cursor):
 
 def logTable(cursor, name):
   print(name.upper())
-  for row in cursor.execute("SELECT * from {}".format(name)): # REMOVE DANGEROUS
+  for row in cursor.execute("SELECT * from {}".format(name)): # DANGEROUS ony for debug
     print(row)
 
 def main():
@@ -135,13 +133,6 @@ def main():
   
   saveData(load(dataFile), cursor)
 
-  # logTable(cursor, 'person')
-  # logTable(cursor, 'score')
-  # logTable(cursor, 'voice')
-  # logTable(cursor, 'edition')
-  # logTable(cursor, 'score_author')
-  # logTable(cursor, 'edition_author')
-  # logTable(cursor, 'print')
   conn.commit()
   conn.close()
 
