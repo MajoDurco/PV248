@@ -7,45 +7,19 @@ Composition Year:
 Publication Year:
 Edition: a
 Editor: István Máriássy 
-Voice 1: 
+Voice 1: oboe 
 Partiture: yes
 Incipit:
 
 Print Number: 762
-Composer: Kalabis, Viktor (1923--)
+Composer: Kalabis, Viktor
 Title: Allegretto
 Genre: piano etudes
 Key: C
 Composition Year:
 Publication Year:
-Edition: b
-Editor: Bob Cerulli 
-Voice 1: a
-Partiture: yes
-Incipit:
-
-Print Number: 763
-Composer: Kalabis, Viktor (1923--)
-Title: Allegretto
-Genre: piano etudes
-Key: C
-Composition Year:
-Publication Year:
-Edition: b
-Editor: Bob Cerulli
-Voice 1: a
-Partiture: yes
-Incipit:
-
-Print Number: 764
-Composer: Kalabis, Viktor (1923--)
-Title: Allegretto
-Genre: piano etudes
-Key: C
-Composition Year:
-Publication Year:
-Edition: C
-Editor: Bob Cerulli
-Voice 1: a
+Edition: a
+Editor: István Máriássyx
+Voice 1: oboe 
 Partiture: yes
 Incipit:
