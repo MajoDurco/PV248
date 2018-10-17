@@ -263,7 +263,7 @@ class Voice:
 
 class Person:
   def __init__(self, name='', born=None, died=None):
-    self.name = name.strip()
+    self.name = name.replace(',', '').strip()
     self.born = born
     self.died = died
   
