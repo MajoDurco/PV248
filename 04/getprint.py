@@ -9,16 +9,16 @@ def logTable(cursor, name):
   for row in cursor.execute("SELECT * from {}".format(name)): # DANGEROUS ony for debug
     print(row)
 
-def falsyToNull(value):
+def falsyToNone(value):
   if value == 'NULL' or not value:
-    return 'null'
+    return None
   return value
 
 def parseComposers(composers):
   return [{
-    'name': falsyToNull(composer[0]),
-    'born': falsyToNull(composer[1]),
-    'died': falsyToNull(composer[2])
+    'name': falsyToNone(composer[0]),
+    'born': falsyToNone(composer[1]),
+    'died': falsyToNone(composer[2])
   } for composer in composers]
 
 def main():

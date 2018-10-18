@@ -12,8 +12,21 @@ Partiture: yes
 Incipit:
 
 Print Number: 762
-Composer: Kalabis, Viktor
+Composer: Kalabis, Viktorooo
 Title: Allegretto
+Genre: piano etudes
+Key: C
+Composition Year:
+Publication Year:
+Edition: b
+Editor: István Máriássy
+Voice 1: oboe1
+Partiture: yes
+Incipit:
+
+Print Number: 763
+Composer: Kalabis, Viktorooo; Koželuh, Antonín (1738--1814)
+Title: Alle
 Genre: piano etudes
 Key: C
 Composition Year:
