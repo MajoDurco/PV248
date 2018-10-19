@@ -12,6 +12,7 @@ def falsyToNone(value):
 def parseSearchResult(cursor):
   result_dic = {}
   for row in cursor.fetchall():
+    print(row)
     person_data_dic = {}
 
     person_data_dic["Print Number"] = row[1]
@@ -50,7 +51,10 @@ def parseSearchResult(cursor):
     person_data_dic["Incipit"] = falsyToNone(row[10])
 
     person_name = row[0]
-    result_dic[person_name] = [person_data_dic]
+    if person_name in result_dic:
+      result_dic[person_name].append(person_data_dic)
+    else:
+      result_dic[person_name] = [person_data_dic]
   return result_dic
 
 def main():
@@ -71,7 +75,6 @@ def main():
       FROM (SELECT * FROM person WHERE person.name LIKE ?) person
         JOIN score_author s_a ON person.id = s_a.composer
         JOIN score ON score.id = s_a.score
-        JOIN voice ON voice.score = score.id
         JOIN edition ON edition.score = score.id
         JOIN print ON print.edition = edition.id
   ''', ("%" + composer_name + "%",))
