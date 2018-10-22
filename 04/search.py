@@ -9,16 +9,20 @@ def falsyToNone(value):
     return None
   return value
 
+def parsePartiture(partiture):
+  if partiture is "Y":
+    return True
+  return False
+
 def parseSearchResult(cursor):
   result_dic = {}
   for row in cursor.fetchall():
-    print(row)
     person_data_dic = {}
 
     person_data_dic["Print Number"] = row[1]
 
     cursor.execute("SELECT person.name, person.born, person.died from score_author JOIN person ON score_author.composer = person.id WHERE score_author.score = ?", (row[2],))
-    person_data_dic["Composers"] = [
+    person_data_dic["Composer"] = [
       {
         "name": composer[0],
         "born": falsyToNone(composer[1]),
@@ -32,7 +36,7 @@ def parseSearchResult(cursor):
     person_data_dic["Edition"] = falsyToNone(row[7])
 
     cursor.execute("SELECT person.name, person.born, person.died from edition_author JOIN person ON edition_author.editor = person.id WHERE edition_author.edition = ?", (row[8],))
-    person_data_dic["Editors"] = [
+    person_data_dic["Editor"] = [
       {
         "name": composer[0],
         "born": falsyToNone(composer[1]),
@@ -47,7 +51,7 @@ def parseSearchResult(cursor):
         "range": falsyToNone(voice[2])
       } for voice in cursor.fetchall()
     }
-    person_data_dic["Partiture"] = falsyToNone(row[9])
+    person_data_dic["Partiture"] = parsePartiture(row[9])
     person_data_dic["Incipit"] = falsyToNone(row[10])
 
     person_name = row[0]
