@@ -2,8 +2,8 @@
 
 import re
 
-def falsyToNull(value):
-  return value if value else 'NULL'
+def falsyToNone(value):
+  return value if value else None
 
 def addMatchToDict(key, matches, dict_ref):
   match = matches[0]
@@ -167,7 +167,7 @@ class Edition:
     )
   
   def getToupleData(self, scoreId):
-    return (scoreId, falsyToNull(self.name), 'NULL')
+    return (scoreId, falsyToNone(self.name), None)
 
   def parseEditors(self, editors):
     if not ',' in editors:
@@ -193,11 +193,11 @@ class Composition:
 
   def getToupleData(self):
     return (
-      falsyToNull(self.name),
-      falsyToNull(self.genre),
-      falsyToNull(self.key),
-      falsyToNull(self.incipit),
-      falsyToNull(self.year)
+      falsyToNone(self.name),
+      falsyToNone(self.genre),
+      falsyToNone(self.key),
+      falsyToNone(self.incipit),
+      falsyToNone(self.year)
     )
   
   def parseIncipit(self, incipit):
@@ -259,7 +259,7 @@ class Voice:
     return 'Voice {}: name: {}, range: {}'.format(self.voiceNumber, self.name, self.range)
   
   def getToupleData(self, scoreId):
-    return (self.voiceNumber, scoreId, falsyToNull(self.range), falsyToNull(self.name))
+    return (self.voiceNumber, scoreId, falsyToNone(self.range), falsyToNone(self.name))
 
 class Person:
   def __init__(self, name='', born=None, died=None):
@@ -271,4 +271,4 @@ class Person:
     return 'Person {}, {} -- {}'.format(self.name, self.born, self.died)
 
   def getToupleData(self):
-    return (falsyToNull(self.born), falsyToNull(self.died), self.name)
+    return (falsyToNone(self.born), falsyToNone(self.died), self.name)
