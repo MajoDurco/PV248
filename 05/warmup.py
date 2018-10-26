@@ -73,10 +73,10 @@ def main() :
       spaceDimension = len(variables) - len(leftSideValues)
       if spaceDimension == 0:
         result = numpy.linalg.solve(leftSideValues, rightSideValues)
-        solution = 'solution:'
+        solution = []
         for variable, value in sorted(zip(variables, result), key=lambda var_value_pair: var_value_pair[0]):
-          solution += ' {} = {},'.format(variable, value)
-        print(solution.strip(','))
+          solution.append('{} = {}'.format(variable, value))
+        print('solution: {}'.format(', '.join(solution)))
       else:
         print('solution space dimension: {}'.format(spaceDimension))
     else:
