@@ -70,7 +70,7 @@ def main() :
     augment_rank = numpy.linalg.matrix_rank(augmented)
 
     if augment_rank == rank:
-      spaceDimension = len(variables) - len(leftSideValues)
+      spaceDimension = len(variables) - augment_rank
       if spaceDimension == 0:
         result = numpy.linalg.solve(leftSideValues, rightSideValues)
         solution = []
