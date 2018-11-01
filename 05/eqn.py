@@ -22,7 +22,7 @@ def parseLine(line):
     raise ValueError('Missing "=" in equation', line)
   leftSide = equalSplit[0].strip()
   rigthSide = equalSplit[1].strip()
-  coeficients_with_sign = re.findall(r'([+-]?)\s?(\d*)([a-z])', leftSide)
+  coeficients_with_sign = re.findall(r'([+-]?)\s*?(\d*)([a-z])', leftSide)
   coeficients = {}
   for sign, number, coeficient in coeficients_with_sign:
     int_number = getNumber(number)
@@ -61,7 +61,6 @@ def main() :
           else:
             equationCoeficients.append(0)
       leftSideValues.append(equationCoeficients)
-    
 
     leftSideValuesNumpy = numpy.array(leftSideValues)
     rightSideValuesNumpy = numpy.array(rightSideValues)
