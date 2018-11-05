@@ -16,8 +16,10 @@ def main() :
     freq = file.getframerate()
     nframes = file.getnframes()
     nchannels = file.getnchannels()
+
     lowest = numpy.inf
     highest = -numpy.inf
+
     for sample in range(int(nframes/freq)):
       frames = file.readframes(freq)
       data = struct.unpack(str(freq * nchannels) + "h", frames)
@@ -33,6 +35,7 @@ def main() :
       if len(peaks) > 0:
         if peaks.min() < lowest: lowest = peaks.min()
         if peaks.max() > highest: highest = peaks.max()
+
     if numpy.isfinite(lowest) and numpy.isfinite(highest):
       print('low = {}, high = {}'.format(lowest, highest))
     else:
