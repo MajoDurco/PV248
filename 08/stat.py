@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import sys
-import pandas
 import json
+import pandas
 
 def getDate(dates_with_excercise):
   return dates_with_excercise.split('/')[0]
@@ -37,7 +37,7 @@ def main():
     table.median(),
     table.quantile(.25),
     table.quantile(.75),
-    table.astype(bool).sum()
+    int(table.astype(bool).sum())
   ], axis='columns')
   result_table.columns = ['mean', 'median', 'first', 'last', 'passed']
   
