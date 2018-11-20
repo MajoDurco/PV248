@@ -12,9 +12,11 @@ def getExcercises(dates_with_excercise):
 
 def getTableBasedOnMode(table, mode):
   if mode == 'dates':
-    return table.rename(columns=getDate)
-  elif mode == 'excercises':
-    return table.rename(columns=getExcercises)
+    table = table.rename(columns=getDate)
+    return table.groupby(axis='columns', level=0).sum()
+  elif mode == 'exercises':
+    table = table.rename(columns=getExcercises)
+    return table.groupby(axis='columns', level=0).sum()
   elif mode == 'deadlines':
     return table
   else:
@@ -37,7 +39,7 @@ def main():
     table.median(),
     table.quantile(.25),
     table.quantile(.75),
-    int(table.astype(bool).sum())
+    table.astype(bool).sum()
   ], axis='columns')
   result_table.columns = ['mean', 'median', 'first', 'last', 'passed']
   
