@@ -2,9 +2,10 @@
 
 import sys
 import json
+import math
 import pandas
+import numpy
 
-from scipy import optimize
 from datetime import datetime
 
 def getDate(dates_with_excercise):
@@ -19,8 +20,6 @@ def getTableBasedOnMode(table, mode):
     return table.tail(1)
   elif mode.isdigit():
     return table.loc[table['student'] == int(mode)]
-    # concated_tables = pandas.concat([table, students_table], axis='columns')
-    # return concated_tables.loc[concated_tables.student == int(mode)].drop(columns='student').sum()
   else:
     sys.exit('Argument can only be id or "average"')
 
@@ -51,18 +50,19 @@ def main():
 
   start_semester = datetime.strptime("2018-09-17", "%Y-%m-%d").toordinal()
   date_table = table_without_student.rename(columns=getDate)
-  date_table = date_table.rename(lambda x: datetime.strptime(x, "%Y-%m-%d").toordinal() - start_semester, axis='columns')
   date_table = date_table.groupby(by=date_table.columns, axis='columns').sum()
   date_table = date_table.reindex(sorted(date_table.columns), axis='columns')
 
-  cumsum = date_table.cumsum(axis='columns')
+  cumsum = date_table.cumsum(axis='columns').iloc[0]
 
-  slope = optimize.curve_fit(lambda x, m: m*x, list(date_table.columns.values), cumsum.iloc[0])[0][0]
+  dates = numpy.array([datetime.strptime(x, '%Y-%m-%d').date().toordinal() - start_semester for x in cumsum.index])
+  dates = dates[:, numpy.newaxis]
+  slope = numpy.linalg.lstsq(dates, cumsum.values, rcond=None)[0][0]
 
   result_dict['regression slope'] = slope
   if slope != 0:
-    result_dict['date 16'] = str(datetime.fromordinal(start_semester + int(round(16 / slope))).date())
-    result_dict['date 20'] = str(datetime.fromordinal(start_semester + int(round(20 / slope))).date())
+    result_dict['date 16'] = str(datetime.fromordinal(math.ceil(start_semester + 16 / slope)).date())
+    result_dict['date 20'] = str(datetime.fromordinal(math.ceil(start_semester + 20 / slope)).date())
 
   print(json.dumps(result_dict, indent=2, ensure_ascii = False))
 
