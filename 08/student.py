@@ -57,12 +57,12 @@ def main():
 
   dates = numpy.array([datetime.strptime(x, '%Y-%m-%d').date().toordinal() - start_semester for x in cumsum.index])
   dates = dates[:, numpy.newaxis]
-  slope = numpy.linalg.lstsq(dates, cumsum.values, rcond=None)[0][0]
+  slope = numpy.linalg.lstsq(dates, cumsum.values, rcond=None)[0]
 
-  result_dict['regression slope'] = slope
+  result_dict['regression slope'] = slope[0]
   if slope != 0:
-    result_dict['date 16'] = str(datetime.fromordinal(math.ceil(start_semester + 16 / slope)).date())
-    result_dict['date 20'] = str(datetime.fromordinal(math.ceil(start_semester + 20 / slope)).date())
+    result_dict['date 16'] = str(datetime.fromordinal(start_semester + 16 / slope).date())
+    result_dict['date 20'] = str(datetime.fromordinal(start_semester + 20 / slope).date())
 
   print(json.dumps(result_dict, indent=2, ensure_ascii = False))
 
