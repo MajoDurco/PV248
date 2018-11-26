@@ -29,8 +29,12 @@ class ServerHandler(SimpleHTTPRequestHandler):
     response = {}
     try:
       connection = http.client.HTTPSConnection(url_base, timeout=1)
-      # TODO forward headers also maybe
-      connection.request('GET', url_rest)
+
+      req_headers = dict(self.headers)
+      if 'Host' in req_headers:
+          del req_headers['Host']
+
+      connection.request('GET', url_rest, headers=req_headers)
       response = connection.getresponse()
       headers = dict(response.getheaders())
       data = response.read().decode('utf-8', 'ignore')
@@ -38,8 +42,9 @@ class ServerHandler(SimpleHTTPRequestHandler):
         'code': response.status,
         'headers': headers,
       }
-      if to_json(data):
-        response['json'] = data
+      json_data = to_json(data)
+      if json_data is not False:
+        response['json'] = json_data
       else:
         response['content'] = data
     except :
@@ -78,8 +83,9 @@ class ServerHandler(SimpleHTTPRequestHandler):
         'code': response.status,
         'headers': headers,
       }
-      if to_json(data):
-        response['json'] = data
+      json_data = to_json(data)
+      if json_data is not False:
+        response['json'] = json_data
       else:
         response['content'] = data
     except :
