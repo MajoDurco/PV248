@@ -102,10 +102,10 @@ class ServerHandler(SimpleHTTPRequestHandler):
       connection.close()
 
   def do_POST(self):
-    data_string = self.rfile.read(int(self.headers['Content-Length']))
+    data_string = self.rfile.read(int(self.headers.get('Content-Length', 0)))
     response = {}
     json_data = to_json(data_string)
-    if not json_data:
+    if json_data is False:
       response['code'] = 'invalid json'
       return self.send_json(response)
 
@@ -122,8 +122,19 @@ class ServerHandler(SimpleHTTPRequestHandler):
     url_base, url_rest, is_ssl = parseUrl(request_url)
     response = {}
     try:
-      connection = http.client.HTTPSConnection(url_base, timeout=timeout)
-      connection.request(http_type, url_rest, body=bytes(json.dumps(content), 'utf-8'), headers=headers)
+      cert_valid = None
+      cert_host_names = None
+      if is_ssl:
+        cert_valid, cert_host_names = checkCertificate(url_base, url_rest, headers, request_type=http_type)
+
+      context = ssl.create_default_context()
+      context.check_hostname = False
+      context.verify_mode = ssl.CERT_NONE
+      connection = http.client.HTTPSConnection(url_base, timeout=timeout, context=context)
+      connection.request(
+        http_type, url_rest,
+        body=bytes(json.dumps(content), 'utf-8') if content is not None else None, headers=headers
+      )
       response = connection.getresponse()
       headers = dict(response.getheaders())
       data = response.read().decode('utf-8', 'ignore')
@@ -136,7 +147,11 @@ class ServerHandler(SimpleHTTPRequestHandler):
         response['json'] = json_data
       else:
         response['content'] = data
-    except :
+      if cert_valid is not None:
+        response['certificate valid'] = cert_valid
+      if cert_host_names is not None:
+        response['certificate for'] = cert_host_names
+    except:
       response = { 'code': 'timeout' }
     finally:
       self.send_json(response)
