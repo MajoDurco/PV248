@@ -69,6 +69,7 @@ class ServerHandler(SimpleHTTPRequestHandler):
       req_headers = dict(self.headers)
       if 'Host' in req_headers:
           del req_headers['Host']
+      req_headers['Accept-Encoding'] = 'identity'
       cert_valid = None
       cert_host_names = None
       if is_ssl:
@@ -79,11 +80,11 @@ class ServerHandler(SimpleHTTPRequestHandler):
       context.verify_mode = ssl.CERT_NONE
       connection = http.client.HTTPSConnection(url_base, timeout=1, context=context)
       connection.request('GET', url_rest, headers=req_headers)
-      response = connection.getresponse()
-      headers = dict(response.getheaders())
-      data = response.read().decode('utf-8', 'ignore')
+      server_response = connection.getresponse()
+      headers = dict(server_response.getheaders())
+      data = server_response.read().decode('utf-8', 'ignore')
       response = {
-        'code': response.status,
+        'code': server_response.status,
         'headers': headers,
       }
       json_data = to_json(data)
@@ -113,6 +114,7 @@ class ServerHandler(SimpleHTTPRequestHandler):
     request_url = json_data.get('url', None)
     content = json_data.get('content', None)
     headers = json_data.get('headers', {})
+    headers['Accept-Encoding'] = 'identity'
     timeout = json_data.get('timeout', 1)
 
     if not url or (http_type == 'POST' and content == None):
@@ -120,7 +122,6 @@ class ServerHandler(SimpleHTTPRequestHandler):
       return self.send_json(response)
 
     url_base, url_rest, is_ssl = parseUrl(request_url)
-    response = {}
     try:
       cert_valid = None
       cert_host_names = None
@@ -135,11 +136,11 @@ class ServerHandler(SimpleHTTPRequestHandler):
         http_type, url_rest,
         body=bytes(json.dumps(content), 'utf-8') if content is not None else None, headers=headers
       )
-      response = connection.getresponse()
-      headers = dict(response.getheaders())
-      data = response.read().decode('utf-8', 'ignore')
+      server_response = connection.getresponse()
+      headers = dict(server_response.getheaders())
+      data = server_response.read().decode('utf-8', 'ignore')
       response = {
-        'code': response.status,
+        'code': server_response.status,
         'headers': headers,
       }
       json_data = to_json(data)
@@ -159,10 +160,12 @@ class ServerHandler(SimpleHTTPRequestHandler):
 
 
   def send_json(self, data):
+    data_bytes = bytes(json.dumps(data), 'utf-8')
     self.send_response(200)
     self.send_header('Content-Type', 'application/json')
+    self.send_header('Content-Length', len(data_bytes))
     self.end_headers()
-    self.wfile.write(bytes(json.dumps(data), 'utf-8'))
+    self.wfile.write(data_bytes)
 
 def main():
   with HTTPServer(('localhost', int(port)), ServerHandler) as httpd:
