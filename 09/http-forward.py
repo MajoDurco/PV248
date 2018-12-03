@@ -17,7 +17,7 @@ def to_json(data):
       return False
 
 def parseUrl(url):
-  without_http = re.sub(r'^http[s]://','', url)
+  without_http = re.sub(r'^https?://','', url)
   split = without_http.split('/', 1)
   base = split[0]
   if len(split) == 2:
@@ -72,13 +72,16 @@ class ServerHandler(SimpleHTTPRequestHandler):
       req_headers['Accept-Encoding'] = 'identity'
       cert_valid = None
       cert_host_names = None
+
       if is_ssl:
         cert_valid, cert_host_names = checkCertificate(url_base, url_rest, req_headers)
+        context = ssl.create_default_context()
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
+        connection = http.client.HTTPSConnection(url_base, timeout=1, context=context)
+      else:
+        connection = http.client.HTTPConnection(url_base, timeout=1)
 
-      context = ssl.create_default_context()
-      context.check_hostname = False
-      context.verify_mode = ssl.CERT_NONE
-      connection = http.client.HTTPSConnection(url_base, timeout=1, context=context)
       connection.request('GET', url_rest, headers=req_headers)
       server_response = connection.getresponse()
       headers = dict(server_response.getheaders())
@@ -96,7 +99,7 @@ class ServerHandler(SimpleHTTPRequestHandler):
         response['certificate valid'] = cert_valid
       if cert_host_names is not None:
         response['certificate for'] = cert_host_names
-    except:
+    except (socket.timeout, socket.gaierror, BlockingIOError):
       response = { 'code': 'timeout' }
     finally:
       self.send_json(response)
@@ -117,7 +120,7 @@ class ServerHandler(SimpleHTTPRequestHandler):
     headers['Accept-Encoding'] = 'identity'
     timeout = json_data.get('timeout', 1)
 
-    if not url or (http_type == 'POST' and content == None):
+    if not request_url or (http_type == 'POST' and content == None):
       response['code'] = 'invalid json'
       return self.send_json(response)
 
@@ -127,11 +130,13 @@ class ServerHandler(SimpleHTTPRequestHandler):
       cert_host_names = None
       if is_ssl:
         cert_valid, cert_host_names = checkCertificate(url_base, url_rest, headers, request_type=http_type)
+        context = ssl.create_default_context()
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
+        connection = http.client.HTTPSConnection(url_base, timeout=1, context=context)
+      else:
+        connection = http.client.HTTPConnection(url_base, timeout=1)
 
-      context = ssl.create_default_context()
-      context.check_hostname = False
-      context.verify_mode = ssl.CERT_NONE
-      connection = http.client.HTTPSConnection(url_base, timeout=timeout, context=context)
       connection.request(
         http_type, url_rest,
         body=bytes(json.dumps(content), 'utf-8') if content is not None else None, headers=headers
@@ -152,12 +157,11 @@ class ServerHandler(SimpleHTTPRequestHandler):
         response['certificate valid'] = cert_valid
       if cert_host_names is not None:
         response['certificate for'] = cert_host_names
-    except:
+    except (socket.timeout, socket.gaierror, BlockingIOError):
       response = { 'code': 'timeout' }
     finally:
       self.send_json(response)
       connection.close()
-
 
   def send_json(self, data):
     data_bytes = bytes(json.dumps(data), 'utf-8')
