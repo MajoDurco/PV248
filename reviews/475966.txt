@@ -1,0 +1,63 @@
+Review od 475966 *0.5, toto review mi pomohlo na co sa v pripade 3 ulohy este mam pozriet a kde by mohla byt chyba. Je vidiet ze dane programy realne spustala a testovala co vidim ako velke plus za tu namahu.
+
+/*****************/
+/**** Uloha 1 ****/
+/*****************/
+Pekne spracovane vstupne argumenty. Mozno by som odporucila presunut to niekde mimo main. Pride mi, ze je praimo v main-e toho celkom dost (co moze byt na druhu stranu dost subjektivny pohlad). Jednotlive funkcie uz su potom pekne, a dobre sa citaju ale main by som doporucila trochu zrefaktorovat.
+
+Casto mas dlhsie nazvy funkcii ako `countCompositionPerCentury` alebo `getCenturyFromCompositionYear`, co je podla mna super. Kod je tym padom "self-describing" a netreba k nemu dalsiu dokumentaciu (co ja osobne preferujem). Lahko sa mi preto orientuje v jednotlivych castiach zdrojoveho kodu. Vseobecne je tvoj kod tejto ulohy velmi pekne napisany.
+
+Jednotlive funkcie robia stale jednu funkciu a to tu, ktoru popisujes v nazve, comu zase nemam co vytknut.
+
+Co som si vsimla v kode a co sa mi moc nepaci je, ze obcas pouzivas camel case nazvy a obcas nazvy oddelene znakom _. Napriklad `translatedDict` a `dict_ref`. Odporucila by som zjednotit. K tejto ulohe ma inak nenapada nic, co by som ti doporucila.
+ 
+/*****************/
+/**** Uloha 2 ****/
+/*****************/
+Tato uloha navazuje na predoslu, cize pohlad na nu je dost podobny, kod sa mi aj v tejto ulohe paci. Zase obcas miesas camel case nazvy a nazvy oddelene znakom _.
+
+stringValueOutput(), listValueOutput(), outputVoice() - nazvy tychto funkcii ma na prvy pohlad trochu zmiatli. Volila by som pridat nieco ako print ale v zasade nic hrozne. Paci sa mi, akym stylom formatujes text.
+
+/*****************/
+/**** Uloha 3 ****/
+/*****************/
+
+Je to navazujuca uloha, niektore postrehy sa opakuju (pomenovavanie). Oproti predoslym dvom uloham je kod trochu horsie citelny. Napriklad funkcia saveData() je v podstate jedna velka fce na vyse 100 riadkov, odporucila by som to trochu zrefaktorovat. Mas tam ale pekne komentare takze je hned jasne v ktorej casti sa co riesi.
+
+Bacha na duplikaciu dat. Pozri sa na vstup na konci tohoto dokumentu. Vytvaras v tomto pripade duplikaciu dat v tabulke Voice. Pri tomto vstupe by si mal mat 3 zaznamy, pretoze sa jedna o rovnaku ediciu. Co sa este vstupu 1 tyka, bacha na to ako parsujes datum umrtia composra. Pri tomto vstupe mi tvoj program neulozil kedy dany composer zomrel (podobne ak testujem na (--1814)). Chcela som priamo najst v kode, kde robis chybu ale oproti predoslym dvom uloham sa tato horsie testuje a trochu horsie sa cita v kode. Co sa tyka testov, skus si este vstup, kde budu 3 printy a jedine co v nich bude ine je print id. V tomto pripade by mal byt v tabulke edition iba jeden zaznam. Tento test mi u teba tiez nepresiel.
+
+Zbytok testov mi preslo v poriadku (nezahrnaju ale uplne vsetky pripady).
+
+/*****************/
+/**** Vstup  *****/
+/*****************/
+
+Print Number: 0 
+Composer: Bach, Johann Sebastian (--1814)
+Title: Christmass Oratorio
+Genre: cantata
+Key: C 
+Composition Year: 1728 
+Publication Year: 2004
+Edition: Barenreiter
+Editor: xy
+Voice 1: g-d3, violin,  part
+Voice 2: C2-c, cello, part 
+Voice 3: c-e3, cis
+Partiture: no
+Incipit: treble 2/4 c4 d8 e8 |
+
+Print Number: 2
+Composer: Bach, Johann Sebastian (1738--)
+Title: Christmass Oratorio
+Genre: cantata
+Key: C 
+Composition Year: 1728 
+Publication Year: 2004
+Edition: Barenreiter
+Editor: xy
+Voice 1: g-d3, violin,  part
+Voice 2: C2-c, cello, part 
+Voice 3: c-e3, cis
+Partiture: no
+Incipit: treble 2/4 c4 d8 e8 |
