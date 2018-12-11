@@ -1,0 +1,99 @@
+Review od 433474*0.5, Review ma mnoho dobrych postrehov pre zlepsenie kodu a suhlasim, ze kod nieje vzdy velmi sebadokumentujuci a chybajuce komentare by boli vhodne.
+
+----
+HW04
+----
+
+Kedze funkcionalita samotna presla mojimi drobnymi testami, nemam k nej komentare.
+
+Co sa tyka stylu, mam len par drobnych postrehov:
+
+GET PRINT
+
+* staci nacitat jeden vstupny argument, takze nasledujuci zapis by sa dal preformulovat:
+
+	_, print_id = sys.argv			[line 32]
+	--> print_id = sys.argv[2]
+
+* funkcia falsyToNone by sa pravdepodobne dala pomenovat lepsie
+
+* tak ako premenne, aj funkcie by mali nasledovat nasledujuci sposob pomenovavania:
+	my_function namiesto myFuncition
+
+* inak pekne clenene na fukcie a elegantne vyriesene jednym selectom 
+
+SEARCH PRINT
+
+* podobny komentar k nacitavaniu argumentov a k pomenovaniu funkcii ako vyssie
+
+* dlhe select prikazy zapisane na jeden riadok by  mohli byt zapisane prehladnejsie rozdelenim na viac riadkov
+	[line 28, line 44]
+
+* funkcia parsePartiture by sa dala skratit:
+		if partiture is "Y":
+			return True
+		return False
+		-->
+		return partiture is "Y"
+
+		^^ samozrejme, nie je to chyba, ale podmienka je dost jednoducha a citatelna na to, aby bolo jasne, co funkcia vrati
+
+
+
+----
+HW05
+----
+
+Ani v tejto ulohe nemam komentar k funkcionalite.
+
+Co sa tyka stylu, mam par drobnych postrehov:
+
+* pomenovanie premennych a funkcii by malo byt vo forme opisanej v komentaroch pre HW01:
+
+	viac tu: https://www.python.org/dev/peps/pep-0008/#naming-conventions
+
+* zabudnuty nepouzity import 		[line 7]
+
+* funkcie isSignNegative a getNumber by sa znovu dali skratit:
+
+	if sign.strip() is '-':
+		return True;
+	return False
+	--> return sign.strip() is '-'
+
+* python nevyuziva ";" ako znak ukoncujuci prikaz:
+
+	return True;					[line 12]
+	numberOfArguments = 2;			[line 42]
+
+* pokial som si vzimla spravne, tak premennu rightSideValuesNumpy program nikdy nepouzije
+
+	rightSideValuesNumpy = numpy.array(rightSideValues)			[line 70]
+
+* funkcia main by si mozno zazluzila par komentarom k jednotlivym blokom kodu, ale jej citatelnost je OK
+
+
+----
+HW06
+----
+
+* pomenovanie premennych a funkcii by malo byt vo forme opisanej v komentaroch pre HW01:
+
+* znovu zabudnuta ";" v kode ;)
+
+	numberOfArguments = 2;			[line 9]
+
+* pomenovanie premennych ako nframes a nchannels nepovazujem za dostatocne opisne, nie je jasne, ci ide o konkretnych "n" frames / channels alebo je to number of, navrchla by som neico ako number_of_frames, pripadne frames_number
+
+* vyuzitie podmienky a priradenia na jednom riadku:
+	if peaks.min() < lowest: lowest = peaks.min()			[line 37]
+	if peaks.max() > highest: highest = peaks.max()			[line 38]
+
+	--> hoci to skracuje kod, je to horsie citatelne a nasledovny zapis je prehladnejsi:
+	if peaks.min() < lowest: 
+		lowest = peaks.min()
+
+	^^ hoci chapem, ze je to mozno vec osobnej preferensie a pri takto jednoduchej podmienke a priradeni je to stale dostatocne prehladne, vseobecne je pre spatne citanie kodu lepsie mat kazdy logicky kusok na novom riadku
+
+* program je sice maly a kompaktny,m ale znovu si myslim, ze by si zasluzil aspon par komentarov,
+aby bolo jednoduchsie ho chapat ak ho nahodou otvoris po dvoch mesiacoch
