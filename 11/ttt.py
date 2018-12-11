@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
 import json
-import os
 import sys
-import urllib
 
 from socketserver import ThreadingMixIn
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -22,9 +20,9 @@ class Game():
     self.id = game_id
     self.name = name
     self.board = [
-      [ 0, 0, 0],
-      [ 0, 0, 0],
-      [ 0, 0, 0],
+      [ 0, 0, 0 ],
+      [ 0, 0, 0 ],
+      [ 0, 0, 0 ],
     ]
     self.player_turn = 1
     self.status = NOT_FINISHED
@@ -37,7 +35,7 @@ class Game():
     return x >= 0 and x < 3 and y >= 0 and y < 3
 
   def is_place_empty(self, x , y):
-    return self.board[x][y] == 0
+    return self.board[y][x] == 0
 
   def get_next_turn_player(self):
     if self.player_turn == 1:
@@ -58,9 +56,9 @@ class Game():
     return is_full
 
   def is_move_victory(self, x, y):
-    if self.board[0][y] == self.board[1][y] == self.board[2][y]:
+    if self.board[0][x] == self.board[1][x] == self.board[2][x]:
         return True
-    if self.board[x][0] == self.board[x][1] == self.board[x][2]:
+    if self.board[y][0] == self.board[y][1] == self.board[y][2]:
         return True
     if x == y and self.board[0][0] == self.board[1][1] == self.board[2][2]:
         return True
@@ -78,7 +76,7 @@ class Game():
     if not self.is_place_empty(x, y):
       raise GameException('Place alredy taken')
     
-    self.board[x][y] = self.player_turn
+    self.board[y][x] = self.player_turn
     if self.is_move_victory(x, y):
       self.winner = self.player_turn
       self.status = FINISHED
