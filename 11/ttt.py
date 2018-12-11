@@ -75,7 +75,6 @@ class Game():
       raise GameException('Place alredy taken')
     
     self.board[y][x] = self.player_turn
-    print("FULL", self.check_full_board())
     if self.is_move_victory(x, y):
       self.winner = self.player_turn
       self.status = FINISHED
@@ -194,7 +193,6 @@ class Handler(BaseHTTPRequestHandler):
   def do_GET(self):
     self.output = {}
     self.parsed = urlparse(self.path)
-    print(self.parsed)
     path = self.parsed.path
     if path == '/start':
       self.handle_start()
