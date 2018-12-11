@@ -47,13 +47,11 @@ class Game():
     self.player_turn = self.get_next_turn_player()
   
   def check_full_board(self):
-    is_full = True
     for row in self.board:
       for column in row:
-        if column != 0:
-          is_full = False
-          break
-    return is_full
+        if column == 0:
+          return False
+    return True
 
   def is_move_victory(self, x, y):
     if self.board[0][x] == self.board[1][x] == self.board[2][x]:
@@ -77,6 +75,7 @@ class Game():
       raise GameException('Place alredy taken')
     
     self.board[y][x] = self.player_turn
+    print("FULL", self.check_full_board())
     if self.is_move_victory(x, y):
       self.winner = self.player_turn
       self.status = FINISHED
