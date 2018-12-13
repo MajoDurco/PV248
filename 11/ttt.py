@@ -147,16 +147,18 @@ class Handler(BaseHTTPRequestHandler):
         'status': 'bad',
         'message': 'Wrong query arguments for /play'
       })
+      return
     try:
       game = int(game[0])
       player = int(player[0])
       x = int(x[0])
       y = int(y[0])
-    except ValueError:
+    except (ValueError, TypeError):
       self.send_result(400, {
         'status': 'bad',
         'message': 'All query parameters should be integers'
       })
+      return
     try:
       game = gameManager.get_game(game)
       game.move(player, x, y)
@@ -166,11 +168,13 @@ class Handler(BaseHTTPRequestHandler):
         'status': 'bad',
         'message': str(gameMngErr)
       })
+      return
     except GameException as gameErr:
       self.send_result(200, {
         'status': 'bad',
         'message': str(gameErr)
       })
+      return
 
   def handle_status(self):
     game = parse_qs(self.parsed.query).get('game')
@@ -179,13 +183,15 @@ class Handler(BaseHTTPRequestHandler):
         'status': 'bad',
         'message': 'Game id is missing'
       })
+      return
     try:
         game = int(game[0])
-    except ValueError:
+    except (ValueError, TypeError):
       self.send_result(400, {
         'status': 'bad',
         'message': 'All query parameters should be integers'
       })
+      return
     try:
       status = gameManager.get_game_status(game)
       self.send_result(200, status)
@@ -194,11 +200,13 @@ class Handler(BaseHTTPRequestHandler):
         'status': 'bad',
         'message': str(gameMngErr)
       })
+      return
     except GameException as gameErr:
       self.send_result(200, {
         'status': 'bad',
         'message': str(gameErr)
       })
+      return
 
   def do_GET(self):
     self.output = {}
