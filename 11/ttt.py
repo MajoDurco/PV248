@@ -104,12 +104,12 @@ class GamesManager():
     game = self.get_game(game_id)
     if game.status == FINISHED:
       return {
-        'winner': game.winner
+        'winner': int(game.winner)
       }
     else:
       return {
         'board': game.board,
-        'next': game.get_next_turn_player(),
+        'next': int(game.get_next_turn_player()),
       }
 
 class Handler(BaseHTTPRequestHandler):
@@ -133,7 +133,7 @@ class Handler(BaseHTTPRequestHandler):
     else:
       new_game = gameManager.create_game(name[0])
     self.send_result(200, {
-      'id': str(new_game.id)
+      'id': int(new_game.id)
     })
 
   def handle_play(self):
@@ -161,10 +161,15 @@ class Handler(BaseHTTPRequestHandler):
       game = gameManager.get_game(game)
       game.move(player, x, y)
       self.send_result(200, { 'status': 'ok' })
-    except (GameManagerException, GameException) as err:
-      self.send_result(409, {
+    except GameManagerException as gameMngErr:
+      self.send_result(400, {
         'status': 'bad',
-        'message': str(err)
+        'message': str(gameMngErr)
+      })
+    except GameException as gameErr:
+      self.send_result(200, {
+        'status': 'bad',
+        'message': str(gameErr)
       })
 
   def handle_status(self):
@@ -184,10 +189,15 @@ class Handler(BaseHTTPRequestHandler):
     try:
       status = gameManager.get_game_status(game)
       self.send_result(200, status)
-    except (GameManagerException, GameException) as err:
-      self.send_result(409, {
+    except GameManagerException as gameMngErr:
+      self.send_result(400, {
         'status': 'bad',
-        'message': str(err)
+        'message': str(gameMngErr)
+      })
+    except GameException as gameErr:
+      self.send_result(200, {
+        'status': 'bad',
+        'message': str(gameErr)
       })
 
   def do_GET(self):
