@@ -8,8 +8,6 @@ from time import sleep
 
 class ConnectException(Exception):
   pass
-class StatusException(Exception):
-  pass
 class PlayException(Exception):
   pass
 class CoordinatesException(Exception):
@@ -78,7 +76,12 @@ def get_player_turn(next_id):
   return 2 if next_id == 1 else 1
 
 def make_move(game_id, player, x, y):
-  play_response, _ = call_server('/play?game={}&player={}&x={}&y={}'.format(game_id, player, x, y))
+  try:
+    play_response, response = call_server('/play?game={}&player={}&x={}&y={}'.format(game_id, player, x, y))
+  except Exception as err:
+    raise PlayException(err)
+  if response.status >= 400:
+    raise PlayException('Error from server')
   if play_response['status'] == 'bad':
     raise PlayException(play_response['message'])
   return play_response
