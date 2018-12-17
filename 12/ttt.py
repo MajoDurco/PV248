@@ -228,15 +228,22 @@ class Handler(BaseHTTPRequestHandler):
 
   def handle_connect(self):
     game_id = parse_qs(self.parsed.query).get('id')
-    if game is None:
+    if game_id is None:
       self.send_result(400, {
         'status': 'bad',
         'message': 'Game id is missing'
       })
       return
     try:
-        game = int(game[0])
-
+      game_id = int(game_id[0])
+    except (ValueError, TypeError):
+      self.send_result(400, {
+        'status': 'bad',
+        'message': 'Id should be integer'
+      })
+      return
+    gameManager.connect_to_game(game_id)
+    self.send_result(200, { 'status': 'ok' })
 
   def do_GET(self):
     self.output = {}
