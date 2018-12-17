@@ -4,10 +4,22 @@ import sys
 import json
 import urllib.request
 
+from time import sleep
+
 class ConnectException(Exception):
   pass
 class StatusException(Exception):
   pass
+class PlayException(Exception):
+  pass
+class CoordinatesException(Exception):
+  pass
+
+BOARD_ICON_MAP = {
+  '0': '_',
+  '1': 'x',
+  '2': 'o'
+}
 
 def is_integer(data):
   try:
@@ -17,12 +29,8 @@ def is_integer(data):
     return False
 
 def parse_json_response(response):
-  try:
-    str_response = response.read().decode('utf-8')
-    return json.loads(str_response)
-  except Exception as e: # TODO make specific
-    print(e)
-    return None
+  str_response = response.read().decode('utf-8')
+  return json.loads(str_response)
 
 def call_server(path):
   response = urllib.request.urlopen(url+path)
@@ -55,14 +63,76 @@ def get_game_status(game_id):
     raise ('Error from server to get game status')
   return status_response
 
+def print_game_board(board):
+  for row in board:
+    output_row = ""
+    for column in row:
+      output_row += BOARD_ICON_MAP[str(column)]
+    print(output_row)
+
+def print_game(game_id):
+  game = get_game_status(game_id)
+  print_game_board(game['board'])
+
+def get_player_turn(next_id):
+  return 2 if next_id == 1 else 1
+
+def make_move(game_id, player, x, y):
+  play_response, _ = call_server('/play?game={}&player={}&x={}&y={}'.format(game_id, player, x, y))
+  if play_response['status'] == 'bad':
+    raise PlayException(play_response['message'])
+  return play_response
+
+def get_coordinates(input_text):
+  coordinates = input_text.strip().split()
+  if len(coordinates) != 2:
+    raise CoordinatesException()
+  return coordinates
+
+def print_game_result(winner, as_player):
+  if winner == 0:
+    print('draw')
+  elif winner == as_player:
+    print('you win')
+  else:
+    print('you lose')
+
+def play_game(game_id, as_player):
+  game = get_game_status(game_id)
+  print_wait = True
+  while True:
+    game = get_game_status(game_id)
+    if 'winner' in game:
+      break
+    if game['next'] == as_player:
+      if print_wait:
+        print_game(game_id)
+        print('waiting for the other player')
+        print_wait = False
+      game = get_game_status(game_id)
+      sleep(1)
+    else:
+      print_game(game_id)
+      input_coordinates = input('your turn ({}):'.format(BOARD_ICON_MAP[str(get_player_turn(game['next']))]))
+      try:
+        coordinates = get_coordinates(input_coordinates)
+        make_move(game_id, as_player, coordinates[0], coordinates[1])
+        print_wait = True
+      except (PlayException, CoordinatesException) as err:
+        print('invalid input')
+  print_game(game_id)
+  winner = game['winner']
+  print_game_result(winner, as_player)
+
 def new_or_connect(avaiable_games):
-  user_input = input('Type "new" to start a new game or id of a existing game to connect to it:\n')
+  user_input = input('Type "new" to start a new game or id to connect to existing game:\n')
   if user_input == 'new':
     new_game_id = create_new_game()
-    print('status:', get_game_status(new_game_id))
+    play_game(new_game_id, 1)
   elif is_integer(user_input):
     try:
       connect_to_game(user_input, avaiable_games)
+      play_game(user_input, 2)
     except ConnectException as err:
       print(str(err))
   else:
