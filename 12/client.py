@@ -50,8 +50,9 @@ def connect_to_game(game_id, avaiable_games):
     raise ConnectExcep('Error from server to connect')
   return connect_response
 
-def create_new_game():
-  game_name = input('Insert game name:\n')
+def create_new_game(user_input):
+  user_split = user_input.split()
+  game_name = '_'.join(user_split[1:]) if len(user_split) > 1 else ''
   start_response, _ = call_server('/start?name={}'.format(game_name))
   return start_response['id']
 
@@ -70,7 +71,8 @@ def print_game_board(board):
 
 def print_game(game_id):
   game = get_game_status(game_id)
-  print_game_board(game['board'])
+  if 'board' in game:
+    print_game_board(game['board'])
 
 def get_player_turn(next_id):
   return 2 if next_id == 1 else 1
@@ -123,14 +125,14 @@ def play_game(game_id, as_player):
         print_wait = True
       except (PlayException, CoordinatesException) as err:
         print('invalid input')
-  print_game(game_id)
   winner = game['winner']
   print_game_result(winner, as_player)
 
 def new_or_connect(avaiable_games):
   user_input = input('Type "new" to start a new game or id to connect to existing game:\n')
-  if user_input == 'new':
-    new_game_id = create_new_game()
+  user_input = user_input.strip()
+  if user_input.startswith('new'):
+    new_game_id = create_new_game(user_input)
     play_game(new_game_id, 1)
   elif is_integer(user_input):
     try:
