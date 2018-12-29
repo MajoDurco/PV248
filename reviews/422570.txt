@@ -1,0 +1,31 @@
+Review od 422570 *0.5, bolo vidno ze dane ulohy samostatne testoval. Hlavne som dostal dolezity a zaujimavy feedback na ulohu 12 na ktoru sa budem este musiet pozriet.
+
+Uloha 8
+
+- V ukazkovom vystupe pre student.py v slajdoch je kluc "total" pred klucom "passed" ale ty mas najprv "passed" az potom "total".
+- Inak nemam k funkcionalite ziadne vyhrady, testoval som to a vyzera, ze vsetko funguje ako ma.
+- Nazov metody getTableBasedOnMode by mozno mohol zacinat niecim inym ako "get", pretoze get metody by mali sluzit cisto na vratenie nejakej premennej.
+  Ty ale v danej metode zoberies parameter, ten prislusnym sposobom spracujes a az potom ho takto spracovany vratis (ale to je vec osobneho nazoru...).
+- Kod v metode main (student.py) by mohol byt rozdeleny do viacerych mensich metod. 
+  Hlavne pri praci s datumami by pre nezainteresovanych ludi nemuselo byt uplne jasne co sa tam pocita.
+- Inak je kod velmi elegantne napisany (kratky na to co vsetko sa tam pocita).
+
+Uloha 11
+
+- GET /status vracia vzdy nespravneho hraca v kluci "next". Napriklad pri novej hre by to malo vratit "next": 1 ale vracia to "next": 2.
+- v triede Handler vracia metoda do_Post: "GET not supported". Malo by to vracat "POST not supported".
+- Vsade pouzivas pre oddelenie slov v nazvoch premennych podtrzitko, iba pre premennu gameManager (ttt.py) si pouzil camel case. Bolo by fajn mat kod jednotny.
+- Kod je dobre strukturovany a dobre sa cita aj bez komentarov, pretoze je jasne uz z nazvov jednotlivych metod co robia.
+  Jedina cast, ktora nebola jasna je metoda get_next_turn_player, ktora vracala vzdy opacneho hraca ako toho co bol na rade.
+
+Uloha 12
+
+- Pri cakani na tah protivnika posielas kazdu sekundu dva GET requesty na status hry namiesto jedneho (riadok 109 a 117 v client.py).
+- Ked uzivatel zada "newRandomText" tak to vytvory novu hru bez mena namiesto toho aby to vyhodnotilo ako invalid input.
+- Ked sa hrac pripaja do hry a zada id, ktore neexistuje, tak je vypisane "Game does not exist" namiesto "invalid input".
+- GET request /list by mal podla zadania vraciat hry s prazdnou hracou plochou (alebo plochou kde este nie je znacka od hraca 2). 
+  Tvoj GET /list ale vracia hry ku ktorym sa este nepripojil druhy hrac bez ohladu na to ci je hracia plocha prazdna alebo nie.
+- metodu get_player_turn by si nepotreboval, keby ti GET /status vracia v kluci "next" hraca, ktory je na rade a nie hraca, ktory pojde po nom (spomenute v ulohe 11).
+- Mozno by sa hodil iny nazov pre metodu print_game_list (client.py), kedze tie hry len nevypisuje ale aj vracia.
+- Zaroven v danej metode na konci iterujes cez game_list s tym, ze pouzivas nazov premennej "gameId" pre jednotlive hry, pricom sa nejedna o idcka ale o celkove hry.
+- Celkovo je kod dobre citatelny akurat metode play_game v client.py by sa zisli komentare pre lahsie pochopenie.
